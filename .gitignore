@@ -1,0 +1,4 @@
+*.user.proj
+bin
+obj
+packages
