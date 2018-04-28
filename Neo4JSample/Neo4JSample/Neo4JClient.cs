@@ -5,7 +5,6 @@ using Neo4j.Driver.V1;
 using Neo4JSample.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Neo4JSample.Serializer;
@@ -24,8 +23,7 @@ namespace Neo4JSample
 
         public async Task CreateIndices()
         {
-            string[] queries = new[] 
-            {
+            string[] queries = {
                 "CREATE INDEX ON :Movie(title)",
                 "CREATE INDEX ON :Movie(id)",
                 "CREATE INDEX ON :Person(id)",
@@ -73,15 +71,14 @@ namespace Neo4JSample
         public async Task CreateMovies(IList<Movie> movies)
         {
             string cypher = new StringBuilder()
-                .AppendLine("WITH {json} AS data")
-                .AppendLine("UNWIND data AS movie")
+                .AppendLine("UNWIND {movies} AS movie")
                 .AppendLine("MERGE (m:Movie {id: movie.id})")
                 .AppendLine("SET m = movie")
                 .ToString();
 
             using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "json", ParameterSerializer.ToDictionary(movies) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "movies", ParameterSerializer.ToDictionary(movies) } });
             }
         }
 

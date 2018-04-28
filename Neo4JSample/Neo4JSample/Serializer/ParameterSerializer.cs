@@ -17,18 +17,5 @@ namespace Neo4JSample.Serializer
 
             return JsonConvert.DeserializeObject<IList<Dictionary<string, object>>>(json, new CustomDictionaryConverter());
         }
-
-        public static Dictionary<string, object> ToDictionary<TSourceType>(TSourceType source)
-        {
-            var settings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            };
-
-            string json = JsonConvert.SerializeObject(source, settings);
-
-            return JsonConvert.DeserializeObject<Dictionary<string, object>>(json, new CustomDictionaryConverter());
-        }
-
     }
 }
