@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Neo4JSample.Model
-{
-    public class Person
-    {
-        public string Id { get; set; }
+using Neo4j.Driver.V1;
 
-        public string Name { get; set; }
+namespace Neo4JSample.Settings
+{
+    public interface IConnectionSettings
+    {
+        string Uri { get; }
+
+        IAuthToken AuthToken { get; }
     }
 }

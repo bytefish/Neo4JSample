@@ -1,21 +1,30 @@
-﻿using Neo4j.Driver.V1;
+﻿// Copyright (c) Philipp Wagner. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Neo4j.Driver.V1;
 using Neo4JSample.Model;
-using Neo4JSample.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Neo4JSample.Converters.Provider;
+using Neo4JSample.Settings;
 
 namespace Neo4JSample
 {
     public class Neo4JClient : IDisposable
     {
-        private readonly IDriver _driver;
+        private readonly IDriver driver;
+        private readonly IConverterProvider converters;
 
-        public Neo4JClient(string uri, string user, string password)
+        public Neo4JClient(IConnectionSettings settings)
+            : this(settings, new ConverterProvider()) { }
+
+        public Neo4JClient(IConnectionSettings settings, IConverterProvider converters)
         {
-            _driver = GraphDatabase.Driver(uri, AuthTokens.Basic(user, password));
+            this.driver = GraphDatabase.Driver(settings.Uri, settings.AuthToken);
+            this.converters = converters;
         }
 
         public async Task CreateIndices()
@@ -29,7 +38,7 @@ namespace Neo4JSample
                 "CREATE INDEX ON :Genre(name)"
             };
 
-            using (var session = _driver.Session())
+            using (var session = driver.Session())
             {
                 foreach(var query in queries)
                 {
@@ -46,9 +55,9 @@ namespace Neo4JSample
                 .AppendLine("SET p = person")
                 .ToString();
 
-            using (var session = _driver.Session())
+            using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "persons", persons.Select(x => SerializationUtils.AsDictionary(x)) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "persons", ConvertList(persons) } });
             }
         }
 
@@ -60,23 +69,24 @@ namespace Neo4JSample
                 .AppendLine("SET g = genre")
                 .ToString();
 
-            using (var session = _driver.Session())
+            using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "genres", genres.Select(x => SerializationUtils.AsDictionary(x)) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "genres", ConvertList(genres) } });
             }
         }
 
         public async Task CreateMovies(IList<Movie> movies)
         {
             string cypher = new StringBuilder()
-                .AppendLine("UNWIND {movies} AS movie")
+                .AppendLine("WITH {json} AS data")
+                .AppendLine("UNWIND data AS movie")
                 .AppendLine("MERGE (m:Movie {id: movie.id})")
                 .AppendLine("SET m = movie")
                 .ToString();
 
-            using (var session = _driver.Session())
+            using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "movies", movies.Select(x => SerializationUtils.AsDictionary(x)) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "json", ConvertList(movies) } });
             }
         }
 
@@ -101,19 +111,33 @@ namespace Neo4JSample
                 .AppendLine("MERGE (m)-[r:GENRE]->(g)")
                 .ToString();
 
-            var parameters = metadatas.Select(x => SerializationUtils.AsDictionary(x)).ToArray();
 
-            using (var session = _driver.Session())
+            using (var session = driver.Session())
             {
-                var res = await session.RunAsync(cypher, new Dictionary<string, object>() { { "metadatas", parameters } });
+                var res = await session.RunAsync(cypher, new Dictionary<string, object>() { { "metadatas", ConvertList(metadatas) } });
             }
         }
 
+        private IList<Dictionary<string, object>> ConvertList<TSourceType>(IList<TSourceType> source)
+        {
+            var converter = converters.Resolve<TSourceType, Dictionary<string, object>>();
+
+            return source
+                .Select(x => converter.Convert(x))
+                .ToList();
+        }
 
 
+        private Dictionary<string, object> Convert<TSourceType>(TSourceType source)
+        {
+            var converter = converters.Resolve<TSourceType, Dictionary<string, object>>();
+
+            return converter.Convert(source);
+        }
+        
         public void Dispose()
         {
-            _driver?.Dispose();
+            driver?.Dispose();
         }
     }
 }

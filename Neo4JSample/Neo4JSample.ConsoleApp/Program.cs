@@ -1,12 +1,12 @@
 ﻿using Neo4JSample.ConsoleApp.Services;
 using System;
 using System.Threading.Tasks;
+using Neo4JSample.Settings;
 
 namespace Neo4JSample.ConsoleApp
 {
-    public class ConsoleApplication
+    internal class Program
     {
-
         public static void Main(string[] args)
         {
             var service = new MovieDataService();
@@ -16,7 +16,9 @@ namespace Neo4JSample.ConsoleApp
 
         public static async Task RunAsync(IMovieDataService service)
         {
-            using (var client = new Neo4JClient("bolt://localhost:7687/db/actors", "neo4j", "test_pwd"))
+            var settings = ConnectionSettings.CreateBasicAuth("bolt://localhost:7687/db/actors", "neo4j", "test_pwd");
+
+            using (var client = new Neo4JClient(settings))
             {
                 // Create Indices for faster Lookups:
                 await client.CreateIndices();
