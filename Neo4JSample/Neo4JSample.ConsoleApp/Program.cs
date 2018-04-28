@@ -1,7 +1,8 @@
-﻿using Neo4JSample.ConsoleApp.Services;
-using System;
+﻿// Copyright (c) Philipp Wagner. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Neo4JSample.ConsoleApp.Services;
 using System.Threading.Tasks;
-using Neo4JSample.Serializer;
 using Neo4JSample.Settings;
 
 namespace Neo4JSample.ConsoleApp

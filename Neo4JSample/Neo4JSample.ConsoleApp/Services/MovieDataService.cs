@@ -1,4 +1,7 @@
-﻿using Neo4JSample.Model;
+﻿// Copyright (c) Philipp Wagner. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using Neo4JSample.Model;
 using System.Collections.Generic;
 
 namespace Neo4JSample.ConsoleApp.Services
