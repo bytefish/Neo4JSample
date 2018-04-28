@@ -1,6 +1,7 @@
 ﻿using Neo4JSample.ConsoleApp.Services;
 using System;
 using System.Threading.Tasks;
+using Neo4JSample.Serializer;
 using Neo4JSample.Settings;
 
 namespace Neo4JSample.ConsoleApp
@@ -20,6 +21,7 @@ namespace Neo4JSample.ConsoleApp
 
             using (var client = new Neo4JClient(settings))
             {
+
                 // Create Indices for faster Lookups:
                 await client.CreateIndices();
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Neo4JSample.Converters.Provider;
+using Neo4JSample.Serializer;
 using Neo4JSample.Settings;
 
 namespace Neo4JSample
@@ -16,15 +16,10 @@ namespace Neo4JSample
     public class Neo4JClient : IDisposable
     {
         private readonly IDriver driver;
-        private readonly IConverterProvider converters;
-
+        
         public Neo4JClient(IConnectionSettings settings)
-            : this(settings, new ConverterProvider()) { }
-
-        public Neo4JClient(IConnectionSettings settings, IConverterProvider converters)
         {
             this.driver = GraphDatabase.Driver(settings.Uri, settings.AuthToken);
-            this.converters = converters;
         }
 
         public async Task CreateIndices()
@@ -57,7 +52,7 @@ namespace Neo4JSample
 
             using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "persons", ConvertList(persons) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "persons", ParameterSerializer.ToDictionary(persons) } });
             }
         }
 
@@ -71,7 +66,7 @@ namespace Neo4JSample
 
             using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "genres", ConvertList(genres) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "genres", ParameterSerializer.ToDictionary(genres) } });
             }
         }
 
@@ -86,7 +81,7 @@ namespace Neo4JSample
 
             using (var session = driver.Session())
             {
-                await session.RunAsync(cypher, new Dictionary<string, object>() { { "json", ConvertList(movies) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "json", ParameterSerializer.ToDictionary(movies) } });
             }
         }
 
@@ -114,25 +109,8 @@ namespace Neo4JSample
 
             using (var session = driver.Session())
             {
-                var res = await session.RunAsync(cypher, new Dictionary<string, object>() { { "metadatas", ConvertList(metadatas) } });
+                await session.RunAsync(cypher, new Dictionary<string, object>() { { "metadatas", ParameterSerializer.ToDictionary(metadatas) } });
             }
-        }
-
-        private IList<Dictionary<string, object>> ConvertList<TSourceType>(IList<TSourceType> source)
-        {
-            var converter = converters.Resolve<TSourceType, Dictionary<string, object>>();
-
-            return source
-                .Select(x => converter.Convert(x))
-                .ToList();
-        }
-
-
-        private Dictionary<string, object> Convert<TSourceType>(TSourceType source)
-        {
-            var converter = converters.Resolve<TSourceType, Dictionary<string, object>>();
-
-            return converter.Convert(source);
         }
         
         public void Dispose()
