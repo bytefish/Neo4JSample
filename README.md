@@ -148,7 +148,7 @@ The Graph data model is straightforward:
 Using the Neo4j Browser the Graph can be nicely visualized as a Graph and exported as SVG:
 
 <div style="display:flex; align-items:center; justify-content:center;">
-    <img style="width: 50%;" src="https://github.com/bytefish/Neo4JSample/raw/master/Neo4JSample/Screenshots/graph.svg">
+    <img style="width: 50%;" src="https://github.com/bytefish/Neo4JSample/raw/master/Neo4JSample/Screenshots/graph.png">
 </div>
 
 [Neo4j Browser]: https://neo4j.com/developer/guide-neo4j-browser/
