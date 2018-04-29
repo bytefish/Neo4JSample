@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Neo4JSample.Model
 {
-    public class Metadata
+    public class MovieInformation
     {
         [JsonProperty("movie")]
         public Movie Movie { get; set; }

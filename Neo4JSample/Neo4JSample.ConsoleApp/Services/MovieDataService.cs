@@ -14,7 +14,7 @@ namespace Neo4JSample.ConsoleApp.Services
 
         IList<Movie> Movies { get; }
 
-        IList<Metadata> Metadatas { get; }
+        IList<MovieInformation> Metadatas { get; }
     }
 
     public class MovieDataService : IMovieDataService
@@ -65,7 +65,7 @@ namespace Neo4JSample.ConsoleApp.Services
             Name = "Action"
         };
         
-        private static Metadata Metadata0 = new Metadata
+        private static MovieInformation Metadata0 = new MovieInformation
         {
             Cast = new[] { Actor0 },
             Director = Director0,
@@ -73,7 +73,7 @@ namespace Neo4JSample.ConsoleApp.Services
             Movie = Movie0
         };
 
-        private static Metadata Metadata1 = new Metadata
+        private static MovieInformation Metadata1 = new MovieInformation
         {
             Cast = new[] { Actor1 },
             Director = Director1,
@@ -105,7 +105,7 @@ namespace Neo4JSample.ConsoleApp.Services
             }
         }
 
-        public IList<Metadata> Metadatas
+        public IList<MovieInformation> Metadatas
         {
             get
             {

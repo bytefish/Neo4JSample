@@ -82,7 +82,7 @@ namespace Neo4JSample
             }
         }
 
-        public async Task CreateRelationships(IList<Metadata> metadatas)
+        public async Task CreateRelationships(IList<MovieInformation> metadatas)
         {
             string cypher = new StringBuilder()
                 .AppendLine("UNWIND {metadatas} AS metadata")

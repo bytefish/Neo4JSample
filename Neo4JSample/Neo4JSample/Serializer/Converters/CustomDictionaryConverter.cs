@@ -7,6 +7,11 @@ using Newtonsoft.Json;
 
 namespace Neo4JSample.Serializer.Converters
 {
+    /// <summary>
+    /// This Converter is only a slightly modified converter from the JSON Extension library. 
+    /// 
+    /// All Credit goes to Oskar Gewalli (https://github.com/wallymathieu) and the Makrill Project (https://github.com/NewtonsoftJsonExt/makrill).
+    /// </summary>
     public class CustomDictionaryConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
